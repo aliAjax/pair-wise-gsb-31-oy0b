@@ -285,6 +285,11 @@ main {
   color: #9b5c1c;
 }
 
+.status-booked {
+  background: color-mix(in oklch, #6d5bd0, transparent 78%);
+  color: #5848b8;
+}
+
 .status-muted {
   background: color-mix(in oklch, #5f6870, transparent 80%);
   color: color-mix(in oklch, var(--rs-text), transparent 20%);
@@ -442,6 +447,16 @@ main {
   gap: 16px;
 }
 
+.exchange-locked {
+  margin: 0;
+  border-radius: 7px;
+  background: color-mix(in oklch, #6d5bd0, transparent 86%);
+  color: #5848b8;
+  padding: 12px 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 label {
   display: grid;
   gap: 8px;
@@ -582,6 +597,32 @@ textarea {
 .exchange-card__items span {
   color: color-mix(in oklch, var(--rs-text), transparent 42%);
   font-size: 0.8rem;
+}
+
+.exchange-card__items em {
+  font-style: normal;
+  justify-self: start;
+  min-height: 0;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+}
+
+.exchange-card__confirm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: color-mix(in oklch, var(--rs-text), transparent 35%);
+}
+
+.exchange-card__confirm .confirm-done {
+  color: #2f7548;
+  font-weight: 700;
+}
+
+.exchange-card__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .exchange-card p {

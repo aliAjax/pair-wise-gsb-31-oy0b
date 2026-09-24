@@ -16,7 +16,8 @@ ReSwap 是一个纯前端以物换物 Web 应用。用户可以本地模拟登�
 - 首页瀑布流浏览、分类筛选、关键词搜索。
 - 物品详情、物主资料、选择自己的物品发起交换。
 - 发布物品，支持本地 base64 图片上传、分类和成色选择。
-- 交换管理，区分我发起的和我收到的请求，支持同意、拒绝、完成。
+- 交换管理，区分我发起的和我收到的请求，支持同意、拒绝、撤回、双方确认完成。
+- 交换并发控制：同一笔交换被同意后，两件物品进入「交换中」，其他还在等待的请求收到「交换已另行达成」结果；任一方撤回后两件物品恢复可交换，已拒绝/已另行达成的请求不会复活。
 - 个人中心，编辑资料、上传头像、查看我发布的物品。
 - 主题切换、全局错误处理和 Vant 提示。
 
@@ -124,7 +125,7 @@ src/
 - `ItemStatus` 与 `ExchangeStatus` 被模型、API、store、组件、页面、router guards、formatters 多处引用。
 - `utils/storage.ts` 是存储入口，但全应用 API 和 store 都依赖它的 key 与数据结构。
 
-例如新增 `ItemStatus.BOOKED` 时，应至少修改：`src/constants/item.ts`、`src/models/item.ts`、`src/api/itemApi.ts`、`src/api/exchangeApi.ts`、`src/stores/itemStore.ts`、`src/router/guards.ts`、`src/utils/formatters.ts`、`src/constants/messages.ts`、`src/components/common/ItemCard.vue`、`src/pages/ItemDetail.vue`、`src/pages/Publish.vue` 等文件。
+新增 `ItemStatus.BOOKED`（交换中）时，实际触达了：`src/constants/item.ts`、`src/models/item.ts`、`src/api/itemApi.ts`、`src/api/exchangeApi.ts`、`src/stores/itemStore.ts`、`src/router/guards.ts`、`src/utils/formatters.ts`、`src/constants/messages.ts`、`src/components/common/ItemCard.vue`、`src/pages/ItemDetail.vue`、`src/pages/Profile.vue`、`src/pages/Publish.vue` 等文件。`ExchangeStatus.SUPERSEDED` / `WITHDRAWN` 同理，需要同步修改常量、模型、API 状态机、store、formatters、messages、ExchangeCard 与交换管理页。
 
 ## 环境变量
 

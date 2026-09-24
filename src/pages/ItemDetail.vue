@@ -29,22 +29,27 @@
         <UserBrief v-if="owner" :user="owner" />
 
         <div v-if="!isMine" class="exchange-box">
-          <label>
-            我的交换物
-            <select v-model="selectedItemId">
-              <option value="">选择一件我发布的可交换物品</option>
-              <option v-for="myItem in ownAvailableItems" :key="myItem.id" :value="myItem.id">
-                {{ myItem.title }}
-              </option>
-            </select>
-          </label>
-          <label>
-            留言
-            <textarea v-model="messageText" rows="3" />
-          </label>
-          <button class="primary-button" type="button" :disabled="item.status !== ItemStatus.AVAILABLE" @click="requestExchange">
-            发起交换
-          </button>
+          <p v-if="item.status === ItemStatus.BOOKED" class="exchange-locked">
+            这件物品正在交换中，物主已答应另一笔交换，暂时不能再发起请求。
+          </p>
+          <template v-else>
+            <label>
+              我的交换物
+              <select v-model="selectedItemId">
+                <option value="">选择一件我发布的可交换物品</option>
+                <option v-for="myItem in ownAvailableItems" :key="myItem.id" :value="myItem.id">
+                  {{ myItem.title }}
+                </option>
+              </select>
+            </label>
+            <label>
+              留言
+              <textarea v-model="messageText" rows="3" />
+            </label>
+            <button class="primary-button" type="button" :disabled="item.status !== ItemStatus.AVAILABLE" @click="requestExchange">
+              发起交换
+            </button>
+          </template>
         </div>
         <button v-else-if="item.status === ItemStatus.AVAILABLE" class="secondary-button" type="button" @click="offlineItem">
           下架这件物品

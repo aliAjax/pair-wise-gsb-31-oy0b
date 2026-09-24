@@ -10,7 +10,8 @@
     <div class="stats-row">
       <span>全部 {{ stats.total }}</span>
       <span>待确认 {{ stats.pending }}</span>
-      <span>已同意 {{ stats.accepted }}</span>
+      <span>交换中 {{ stats.accepted }}</span>
+      <span>已撤回 {{ stats.withdrawn }}</span>
       <span>已完成 {{ stats.completed }}</span>
     </div>
 
@@ -34,7 +35,8 @@
         :users="authStore.users"
         @accept="exchangeStore.accept"
         @reject="exchangeStore.reject"
-        @complete="completeExchange"
+        @withdraw="exchangeStore.withdraw"
+        @confirm="exchangeStore.confirmComplete"
       />
     </div>
     <EmptyState
@@ -51,7 +53,7 @@ import { computed, ref } from 'vue';
 
 import EmptyState from '@/components/common/EmptyState.vue';
 import ExchangeCard from '@/components/common/ExchangeCard.vue';
-import { EXCHANGE_STATUS_OPTIONS, ExchangeStatus } from '@/constants/exchange';
+import { EXCHANGE_STATUS_OPTIONS } from '@/constants/exchange';
 import { PAGE_MESSAGES } from '@/constants/messages';
 import { useExchangeStats } from '@/hooks/useExchangeStats';
 import { useAuthStore } from '@/stores/authStore';
@@ -72,11 +74,4 @@ const mine = computed(() => {
 });
 const visibleExchanges = computed(() => mine.value);
 const stats = useExchangeStats(() => exchangeStore.exchanges);
-
-const completeExchange = async (id: string) => {
-  await exchangeStore.complete(id);
-  itemStore.items = itemStore.items.map((item) => item);
-};
-
-void ExchangeStatus.PENDING;
 </script>

@@ -10,25 +10,40 @@
       <div>
         <span>拿出</span>
         <strong>{{ fromItem?.title ?? '未知物品' }}</strong>
+        <em v-if="fromItem" class="status-pill" :class="statusToneClass(fromItem.status)">
+          {{ formatItemStatus(fromItem.status) }}
+        </em>
       </div>
       <div>
         <span>换取</span>
         <strong>{{ toItem?.title ?? '未知物品' }}</strong>
+        <em v-if="toItem" class="status-pill" :class="statusToneClass(toItem.status)">
+          {{ formatItemStatus(toItem.status) }}
+        </em>
       </div>
     </div>
     <p>{{ exchange.message || formatStatusMessage(exchange.status) }}</p>
+    <div v-if="exchange.status === ExchangeStatus.ACCEPTED" class="exchange-card__confirm">
+      <span :class="{ 'confirm-done': exchange.from_confirmed_at }">
+        发起方{{ exchange.from_confirmed_at ? `已确认 · ${formatDate(exchange.from_confirmed_at)}` : '未确认' }}
+      </span>
+      <span :class="{ 'confirm-done': exchange.to_confirmed_at }">
+        物主{{ exchange.to_confirmed_at ? `已确认 · ${formatDate(exchange.to_confirmed_at)}` : '未确认' }}
+      </span>
+    </div>
     <footer>
       <span v-if="fromUser && toUser">{{ fromUser.nickname }} → {{ toUser.nickname }}</span>
       <div v-if="canOperate" class="exchange-card__actions">
-        <button v-if="exchange.status === ExchangeStatus.PENDING" type="button" @click="$emit('accept', exchange.id)">
-          同意
-        </button>
-        <button v-if="exchange.status === ExchangeStatus.PENDING" type="button" @click="$emit('reject', exchange.id)">
-          拒绝
-        </button>
-        <button v-if="exchange.status === ExchangeStatus.ACCEPTED" type="button" @click="$emit('complete', exchange.id)">
-          完成
-        </button>
+        <template v-if="exchange.status === ExchangeStatus.PENDING">
+          <button type="button" @click="$emit('accept', exchange.id)">同意</button>
+          <button type="button" @click="$emit('reject', exchange.id)">拒绝</button>
+        </template>
+        <template v-else-if="exchange.status === ExchangeStatus.ACCEPTED">
+          <button type="button" @click="$emit('withdraw', exchange.id)">撤回</button>
+          <button type="button" :disabled="selfConfirmed" @click="$emit('confirm', exchange.id)">
+            {{ selfConfirmed ? '已确认，等待对方' : '确认完成' }}
+          </button>
+        </template>
       </div>
     </footer>
   </article>
@@ -42,7 +57,13 @@ import type { Exchange } from '@/models/exchange';
 import type { Item } from '@/models/item';
 import type { User } from '@/models/user';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDate, formatExchangeStatus, formatStatusMessage, statusToneClass } from '@/utils/formatters';
+import {
+  formatDate,
+  formatExchangeStatus,
+  formatItemStatus,
+  formatStatusMessage,
+  statusToneClass,
+} from '@/utils/formatters';
 
 const props = defineProps<{
   exchange: Exchange;
@@ -53,7 +74,8 @@ const props = defineProps<{
 defineEmits<{
   accept: [id: string];
   reject: [id: string];
-  complete: [id: string];
+  withdraw: [id: string];
+  confirm: [id: string];
 }>();
 
 const authStore = useAuthStore();
@@ -61,9 +83,17 @@ const fromItem = computed(() => props.items.find((item) => item.id === props.exc
 const toItem = computed(() => props.items.find((item) => item.id === props.exchange.to_item_id));
 const fromUser = computed(() => props.users.find((user) => user.id === props.exchange.from_user_id));
 const toUser = computed(() => props.users.find((user) => user.id === props.exchange.to_user_id));
-const canOperate = computed(
-  () =>
-    authStore.currentUser?.id === props.exchange.to_user_id ||
-    (authStore.currentUser?.id === props.exchange.from_user_id && props.exchange.status === ExchangeStatus.ACCEPTED),
-);
+const isFromUser = computed(() => authStore.currentUser?.id === props.exchange.from_user_id);
+const isToUser = computed(() => authStore.currentUser?.id === props.exchange.to_user_id);
+const isParty = computed(() => isFromUser.value || isToUser.value);
+const selfConfirmed = computed(() => {
+  if (isFromUser.value) return Boolean(props.exchange.from_confirmed_at);
+  if (isToUser.value) return Boolean(props.exchange.to_confirmed_at);
+  return false;
+});
+const canOperate = computed(() => {
+  if (props.exchange.status === ExchangeStatus.PENDING) return isToUser.value;
+  if (props.exchange.status === ExchangeStatus.ACCEPTED) return isParty.value;
+  return false;
+});
 </script>
