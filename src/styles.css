@@ -285,6 +285,11 @@ main {
   color: #9b5c1c;
 }
 
+.status-busy {
+  background: color-mix(in oklch, #7a5af8, transparent 80%);
+  color: #5b3fd4;
+}
+
 .status-muted {
   background: color-mix(in oklch, #5f6870, transparent 80%);
   color: color-mix(in oklch, var(--rs-text), transparent 20%);
@@ -354,6 +359,27 @@ main {
   border-radius: 8px;
   background: color-mix(in oklch, var(--rs-surface), transparent 1%);
   padding: 22px;
+}
+
+.exchange-card__items > div {
+  display: grid;
+  gap: 4px;
+}
+
+.exchange-card__item-status {
+  color: color-mix(in oklch, var(--rs-text), transparent 40%);
+  font-weight: 700;
+}
+
+.exchange-card__hint {
+  margin: 0;
+  color: var(--rs-accent);
+  font-weight: 700;
+}
+
+.exchange-card__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .detail-panel {

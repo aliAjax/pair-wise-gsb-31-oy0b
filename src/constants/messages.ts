@@ -18,16 +18,19 @@ export const FORM_MESSAGES = {
 
 export const LOG_MESSAGES = {
   storageHydrated: 'storage hydrated with status maps',
-  itemStatusUsed: `ItemStatus includes ${ItemStatus.AVAILABLE}, ${ItemStatus.EXCHANGED}, ${ItemStatus.OFFLINE}`,
-  exchangeStatusUsed: `ExchangeStatus includes ${ExchangeStatus.PENDING}, ${ExchangeStatus.ACCEPTED}, ${ExchangeStatus.REJECTED}, ${ExchangeStatus.COMPLETED}`,
+  itemStatusUsed: `ItemStatus includes ${ItemStatus.AVAILABLE}, ${ItemStatus.EXCHANGING}, ${ItemStatus.EXCHANGED}, ${ItemStatus.OFFLINE}`,
+  exchangeStatusUsed: `ExchangeStatus includes ${ExchangeStatus.PENDING}, ${ExchangeStatus.ACCEPTED}, ${ExchangeStatus.REJECTED}, ${ExchangeStatus.SETTLED_ELSEWHERE}, ${ExchangeStatus.WITHDRAWN}, ${ExchangeStatus.COMPLETED}`,
 };
 
 export const STATUS_MESSAGE_MAP = {
   [ItemStatus.AVAILABLE]: '这件物品可发起交换',
+  [ItemStatus.EXCHANGING]: '这件物品正在交换中，暂时不能被抢',
   [ItemStatus.EXCHANGED]: '这件物品已完成交换',
   [ItemStatus.OFFLINE]: '这件物品已下架',
   [ExchangeStatus.PENDING]: '等待对方确认',
-  [ExchangeStatus.ACCEPTED]: '交换已同意，可确认完成',
+  [ExchangeStatus.ACCEPTED]: '交换已同意，双方确认完成后生效',
   [ExchangeStatus.REJECTED]: '交换请求已拒绝',
+  [ExchangeStatus.SETTLED_ELSEWHERE]: '交换已另行达成，这两件物品不能再抢',
+  [ExchangeStatus.WITHDRAWN]: '交换已撤回，两件物品恢复可交换',
   [ExchangeStatus.COMPLETED]: '交换流程已完成',
 };

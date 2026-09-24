@@ -38,6 +38,7 @@
         <div class="stats-row">
           <span>发布 {{ myItems.length }}</span>
           <span>可交换 {{ availableCount }}</span>
+          <span>交换中 {{ exchangingCount }}</span>
           <span>信用 {{ currentUser.credit_score }}</span>
         </div>
       </div>
@@ -101,6 +102,7 @@ watch(
 
 const myItems = computed(() => (currentUser.value ? itemStore.myItems(currentUser.value.id) : []));
 const availableCount = computed(() => myItems.value.filter((item) => item.status === ItemStatus.AVAILABLE).length);
+const exchangingCount = computed(() => myItems.value.filter((item) => item.status === ItemStatus.EXCHANGING).length);
 
 const save = async () => {
   await updateProfile({ ...form });

@@ -10,7 +10,8 @@
     <div class="stats-row">
       <span>全部 {{ stats.total }}</span>
       <span>待确认 {{ stats.pending }}</span>
-      <span>已同意 {{ stats.accepted }}</span>
+      <span>交换中 {{ stats.accepted }}</span>
+      <span>已撤回 {{ stats.withdrawn }}</span>
       <span>已完成 {{ stats.completed }}</span>
     </div>
 
@@ -32,9 +33,10 @@
         :exchange="exchange"
         :items="itemStore.items"
         :users="authStore.users"
-        @accept="exchangeStore.accept"
+        @accept="acceptExchange"
         @reject="exchangeStore.reject"
-        @complete="completeExchange"
+        @confirm="confirmExchange"
+        @withdraw="withdrawExchange"
       />
     </div>
     <EmptyState
@@ -51,7 +53,7 @@ import { computed, ref } from 'vue';
 
 import EmptyState from '@/components/common/EmptyState.vue';
 import ExchangeCard from '@/components/common/ExchangeCard.vue';
-import { EXCHANGE_STATUS_OPTIONS, ExchangeStatus } from '@/constants/exchange';
+import { EXCHANGE_STATUS_OPTIONS } from '@/constants/exchange';
 import { PAGE_MESSAGES } from '@/constants/messages';
 import { useExchangeStats } from '@/hooks/useExchangeStats';
 import { useAuthStore } from '@/stores/authStore';
@@ -73,10 +75,21 @@ const mine = computed(() => {
 const visibleExchanges = computed(() => mine.value);
 const stats = useExchangeStats(() => exchangeStore.exchanges);
 
-const completeExchange = async (id: string) => {
-  await exchangeStore.complete(id);
-  itemStore.items = itemStore.items.map((item) => item);
+// 同意 / 撤回 / 确认完成都会改变两件物品的状态，操作后同步物品列表
+const acceptExchange = async (id: string) => {
+  await exchangeStore.accept(id);
+  await itemStore.hydrate();
 };
 
-void ExchangeStatus.PENDING;
+const confirmExchange = async (id: string) => {
+  if (!authStore.currentUser) return;
+  await exchangeStore.confirmComplete(id, authStore.currentUser.id);
+  await itemStore.hydrate();
+};
+
+const withdrawExchange = async (id: string) => {
+  if (!authStore.currentUser) return;
+  await exchangeStore.withdraw(id, authStore.currentUser.id);
+  await itemStore.hydrate();
+};
 </script>

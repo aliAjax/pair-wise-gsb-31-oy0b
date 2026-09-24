@@ -8,10 +8,11 @@ export interface Exchange {
   to_item_id: string;
   status: ExchangeStatus;
   message: string;
+  confirmed_by: string[];
   created_at: string;
   updated_at: string;
 }
 
-export type ExchangeDraft = Omit<Exchange, 'id' | 'status' | 'created_at' | 'updated_at'> & {
+export type ExchangeDraft = Omit<Exchange, 'id' | 'status' | 'confirmed_by' | 'created_at' | 'updated_at'> & {
   status?: ExchangeStatus;
 };

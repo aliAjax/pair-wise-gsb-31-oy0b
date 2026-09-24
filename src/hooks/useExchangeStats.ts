@@ -9,6 +9,8 @@ export const useExchangeStats = (exchanges: () => Exchange[]) => {
     pending: exchanges().filter((item) => item.status === ExchangeStatus.PENDING).length,
     accepted: exchanges().filter((item) => item.status === ExchangeStatus.ACCEPTED).length,
     rejected: exchanges().filter((item) => item.status === ExchangeStatus.REJECTED).length,
+    settledElsewhere: exchanges().filter((item) => item.status === ExchangeStatus.SETTLED_ELSEWHERE).length,
+    withdrawn: exchanges().filter((item) => item.status === ExchangeStatus.WITHDRAWN).length,
     completed: exchanges().filter((item) => item.status === ExchangeStatus.COMPLETED).length,
   }));
 };

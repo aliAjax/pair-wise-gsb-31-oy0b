@@ -24,7 +24,11 @@ export const useItemStore = defineStore('items', {
           const keywordMatched = `${item.title}${item.description}${item.location}`
             .toLowerCase()
             .includes(state.keyword.toLowerCase());
-          return categoryMatched && keywordMatched && item.status === state.statusFilter;
+          // 默认“可交换”视图同时露出交换中的物品，让首页卡片能看出状态变化
+          const statusMatched =
+            item.status === state.statusFilter ||
+            (state.statusFilter === ItemStatus.AVAILABLE && item.status === ItemStatus.EXCHANGING);
+          return categoryMatched && keywordMatched && statusMatched;
         }),
         ['created_at'],
         ['desc'],
